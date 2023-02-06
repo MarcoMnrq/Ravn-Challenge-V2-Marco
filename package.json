@@ -84,6 +84,8 @@
     }
   },
   "prisma": {
+    "schema": "src/database/schema.prisma",
     "seed": "ts-node prisma/seed.ts"
+
   }
 }
