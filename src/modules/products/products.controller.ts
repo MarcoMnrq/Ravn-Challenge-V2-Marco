@@ -10,9 +10,13 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Product as ProductModel } from '@prisma/client';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('products')
+@ApiTags('Products')
+@Controller({
+  path: 'products',
+  version: '1',
+})
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
@@ -21,7 +25,6 @@ export class ProductsController {
     return this.productsService.create(createProductDto);
   }
 
-  /*
   @Get()
   findAll() {
     return this.productsService.findAll();
@@ -41,5 +44,4 @@ export class ProductsController {
   remove(@Param('id') id: string) {
     return this.productsService.remove(+id);
   }
-  */
 }
