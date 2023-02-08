@@ -1,4 +1,4 @@
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -8,6 +8,11 @@ async function bootstrap() {
   // CORS configuration
   app.enableCors({
     origin: [],
+  });
+  // Versioning
+  app.enableVersioning({
+    defaultVersion: '1',
+    type: VersioningType.URI,
   });
   // Global validation pipe
   app.useGlobalPipes(
@@ -31,10 +36,11 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document);
-  // Versioning
-  app.enableVersioning({
-    type: VersioningType.URI,
-  });
+  // Start app
   await app.listen(3000);
+  Logger.log(
+    'App running on port 3000. Documentation at http://localhost:3000/api-docs',
+    'Bootstrap',
+  );
 }
 bootstrap();
