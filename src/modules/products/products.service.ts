@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Product } from '@prisma/client';
-import { PrismaService } from 'src/database/prisma.service';
+import { PrismaService } from '../../database/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
@@ -40,7 +40,7 @@ export class ProductsService {
       where: { id: id },
     });
     if (!product) {
-      throw new NotFoundException(`Product with ID: ${id} not found`);
+      throw new NotFoundException(`Product #${id} not found`);
     }
     return product;
   }

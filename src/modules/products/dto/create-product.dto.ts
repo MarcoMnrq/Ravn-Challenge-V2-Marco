@@ -8,6 +8,9 @@ export class CreateProductDto {
   description: string;
 
   @IsString()
+  imageUrl: string;
+
+  @IsString()
   category: string;
 
   @IsNumber()

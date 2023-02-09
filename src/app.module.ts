@@ -7,6 +7,12 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
-  imports: [AccessControlModule.forRoles(roles), PrismaModule, ProductsModule, AuthModule, UsersModule],
+  imports: [
+    AccessControlModule.forRoles(roles),
+    PrismaModule,
+    ProductsModule,
+    AuthModule,
+    UsersModule,
+  ],
 })
 export class AppModule {}
