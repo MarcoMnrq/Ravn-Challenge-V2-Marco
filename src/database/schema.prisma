@@ -11,14 +11,14 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
   firstName String?
   lastName  String?
   password  String
-  role      UserRole @default(CLIENT)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  roles     UserRole[] @default([])
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now())
 }
 
 enum UserRole {
@@ -27,7 +27,7 @@ enum UserRole {
 }
 
 model Product {
-  id          Int   @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
   description String?
   category    String

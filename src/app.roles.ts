@@ -6,3 +6,13 @@ export enum AppRoles {
 }
 
 export const roles: RolesBuilder = new RolesBuilder();
+
+roles
+  .grant(AppRoles.MANAGER)
+  .createAny('product')
+  .updateAny('product')
+  .deleteAny('product')
+  .readAny('product')
+
+  .grant(AppRoles.CLIENT)
+  .readAny('product');
