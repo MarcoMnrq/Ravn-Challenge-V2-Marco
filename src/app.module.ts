@@ -5,14 +5,22 @@ import { roles } from './app.roles';
 import { AccessControlModule } from 'nest-access-control';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
 @Module({
   imports: [
     AccessControlModule.forRoles(roles),
     PrismaModule,
-    ProductsModule,
     AuthModule,
     UsersModule,
+    ProductsModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
   ],
 })
 export class AppModule {}
