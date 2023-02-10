@@ -26,7 +26,7 @@ export class ProductsService {
    * It returns all the products from the database
    * @returns An array of products
    */
-  findAll() {
+  async findAll() {
     return this.prisma.product.findMany();
   }
 
