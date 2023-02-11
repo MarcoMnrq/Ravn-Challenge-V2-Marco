@@ -5,7 +5,7 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { ExposedEndpoint } from '../../decorators/exposed-endpoint.decorator';
 import { SignInEmailDto } from './dto/sign-in-email.dto';
 
-@ApiTags('Authentication & Authorization')
+@ApiTags('Authentication')
 @Controller({
   path: 'auth',
   version: '1',

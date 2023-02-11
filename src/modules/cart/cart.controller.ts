@@ -7,13 +7,15 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { CurrentUser } from 'src/decorators/current-user.decorator';
 import { CartService } from './cart.service';
 import { AddCartItemDto } from './dto/add-cart-item.dto';
+import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 
 @ApiBearerAuth()
+@ApiTags('Shopping Cart')
 @Controller('cart-items')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
@@ -28,20 +30,17 @@ export class CartController {
     return this.cartService.getItems(user.id);
   }
 
-  /*
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cartService.findOne(+id);
-  }
-
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCartDto: UpdateCartDto) {
-    return this.cartService.update(+id, updateCartDto);
+  update(
+    @Param('id') id: string,
+    @CurrentUser() user: User,
+    @Body() updateCartItemDto: UpdateCartItemDto,
+  ) {
+    return this.cartService.updateItem(+id, user.id, updateCartItemDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cartService.remove(+id);
+  remove(@Param('id') id: string, @CurrentUser() user: User) {
+    return this.cartService.removeItem(+id, user.id);
   }
-  */
 }
