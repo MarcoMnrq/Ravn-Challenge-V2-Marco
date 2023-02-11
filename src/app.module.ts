@@ -9,6 +9,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { PasswordInterceptor } from './interceptors/password-interceptor.interceptor';
 import { CartModule } from './modules/cart/cart.module';
+import { LikesModule } from './modules/likes/likes.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CartModule } from './modules/cart/cart.module';
     UsersModule,
     ProductsModule,
     CartModule,
+    LikesModule,
   ],
   providers: [
     {
