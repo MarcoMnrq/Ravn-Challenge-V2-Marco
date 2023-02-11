@@ -10,9 +10,10 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UseRoles } from 'nest-access-control';
 
+@ApiBearerAuth()
 @ApiTags('Products')
 @Controller({
   path: 'products',

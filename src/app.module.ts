@@ -5,8 +5,10 @@ import { roles } from './app.roles';
 import { AccessControlModule, ACGuard } from 'nest-access-control';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
+import { PasswordInterceptor } from './interceptors/password-interceptor.interceptor';
+import { CartModule } from './modules/cart/cart.module';
 
 @Module({
   imports: [
@@ -15,6 +17,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
     AuthModule,
     UsersModule,
     ProductsModule,
+    CartModule,
   ],
   providers: [
     {
@@ -24,6 +27,10 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
     {
       provide: APP_GUARD,
       useClass: ACGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: PasswordInterceptor,
     },
   ],
 })

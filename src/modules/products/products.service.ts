@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Product } from '@prisma/client';
 import { PrismaService } from '../../database/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -77,5 +81,24 @@ export class ProductsService {
       },
     });
     return deletedProduct;
+  }
+
+  async findOneAndCheckAvailability(
+    id: number,
+    quantity: number,
+  ): Promise<Product> {
+    const product = await this.findOne(id);
+    if (!product.isVisible) {
+      throw new NotFoundException(`Product #${id} not found`);
+    }
+    if (product.stock <= 0) {
+      throw new BadRequestException(`Product #${id} is out of stock`);
+    }
+    if (product.stock < quantity) {
+      throw new BadRequestException(
+        `Invalid quantity, not enough stock for Product #${id}`,
+      );
+    }
+    return product;
   }
 }
