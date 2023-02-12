@@ -62,9 +62,9 @@ export class CartService {
    * @param {number} userId - number - The user's ID
    * @returns An array of CartItem objects.
    */
-  async getItems(userId: number): Promise<CartItem[]> {
+  async getItems(userId: number) {
     const cart = await this.retrieveUserCart(userId);
-    return this.prisma.cartItem.findMany({
+    const cartItems = await this.prisma.cartItem.findMany({
       where: {
         cartId: cart.id,
       },
@@ -72,6 +72,17 @@ export class CartService {
         product: true,
       },
     });
+    let totalPrice = 0;
+    for (const cartItem of cartItems) {
+      totalPrice += cartItem.product.price * cartItem.quantity;
+    }
+    return {
+      items: cartItems,
+      meta: {
+        totalItems: cartItems.length,
+        totalPrice: totalPrice,
+      },
+    };
   }
 
   /**
