@@ -1,10 +1,39 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { PrismaModule } from './database/prisma.module';
+import { ProductsModule } from './modules/products/products.module';
+import { roles } from './app.roles';
+import { AccessControlModule, ACGuard } from 'nest-access-control';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
+import { PasswordInterceptor } from './interceptors/password-interceptor.interceptor';
+import { CartModule } from './modules/cart/cart.module';
+import { LikesModule } from './modules/likes/likes.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    AccessControlModule.forRoles(roles),
+    PrismaModule,
+    AuthModule,
+    UsersModule,
+    ProductsModule,
+    CartModule,
+    LikesModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ACGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: PasswordInterceptor,
+    },
+  ],
 })
 export class AppModule {}
