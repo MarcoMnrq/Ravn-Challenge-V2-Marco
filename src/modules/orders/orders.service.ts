@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-order.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { CartService } from '../cart/cart.service';
 
@@ -9,13 +8,62 @@ export class OrdersService {
     private readonly prisma: PrismaService,
     private readonly cartService: CartService,
   ) {}
-  async create(userId: number, createOrderDto: CreateOrderDto) {
-    const cartItems = await (await this.cartService.getItems(userId)).items;
-    return;
+
+  async create(userId: number) {
+    const cart = await this.cartService.getItems(userId);
+    if (cart.meta.totalItems === 0) {
+      throw new BadRequestException('Your cart is empty');
+    }
+    const orderItems = cart.items.map((item) => ({
+      quantity: item.quantity,
+      price: item.product.price,
+      product: {
+        connect: {
+          id: item.product.id,
+        },
+      },
+    }));
+    const order = await this.prisma.order.create({
+      data: {
+        total: cart.meta.totalPrice,
+        items: {
+          create: orderItems,
+        },
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+      include: {
+        items: true,
+      },
+    });
+    await this.cartService.clearCart(userId);
+    return order;
   }
 
-  findAll() {
-    return `This action returns all orders`;
+  findAll(userId?: number) {
+    const whereClause = userId ? { userId } : {};
+    console.log(whereClause);
+    return this.prisma.order.findMany({
+      where: whereClause,
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
   }
 
   findOne(id: number) {

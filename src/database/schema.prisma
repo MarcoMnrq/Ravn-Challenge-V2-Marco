@@ -47,15 +47,15 @@ model Product {
 
 model Like {
   id        Int     @id @default(autoincrement())
-  user      User    @relation(fields: [userId], references: [id])
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int
 }
 
 model Cart {
   id        Int        @id @default(autoincrement())
-  user      User       @relation(fields: [userId], references: [id])
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int        @unique
   items     CartItem[]
   createdAt DateTime   @default(now())
@@ -64,7 +64,7 @@ model Cart {
 
 model CartItem {
   id        Int     @id @default(autoincrement())
-  cart      Cart    @relation(fields: [cartId], references: [id])
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
   cartId    Int
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int
@@ -83,9 +83,9 @@ model Order {
 
 model OrderItem {
   id        Int     @id @default(autoincrement())
-  order     Order   @relation(fields: [orderId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId   Int
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
   productId Int
   price     Float
   quantity  Int

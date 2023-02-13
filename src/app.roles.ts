@@ -16,3 +16,12 @@ roles
 
   .grant(AppRoles.CLIENT)
   .readAny('product');
+
+roles
+  .grant(AppRoles.CLIENT)
+  .createOwn('order')
+  .readOwn('order')
+
+  .grant(AppRoles.MANAGER)
+  .createOwn('order')
+  .readAny('order');

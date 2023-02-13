@@ -75,14 +75,31 @@ export class ProductsService {
    */
   async remove(id: number) {
     await this.findOne(id);
-    const deletedProduct = await this.prisma.product.delete({
-      where: {
-        id: id,
-      },
-    });
-    return deletedProduct;
+    try {
+      await this.findOne(id);
+      const deletedProduct = await this.prisma.product.delete({
+        where: {
+          id: id,
+        },
+      });
+      return deletedProduct;
+    } catch (error) {
+      if (error.message.includes('Foreign key constraint failed')) {
+        throw new BadRequestException(
+          'This product is referenced in one or more orders',
+        );
+      }
+      throw error;
+    }
   }
 
+  /**
+   * It finds a product by its ID, checks if it's visible, checks if it's in stock, and checks if the
+   * requested quantity is available
+   * @param {number} id - number - The id of the product we want to find.
+   * @param {number} quantity - number - the quantity of the product that the user wants to buy
+   * @returns A product
+   */
   async findOneAndCheckAvailability(
     id: number,
     quantity: number,
