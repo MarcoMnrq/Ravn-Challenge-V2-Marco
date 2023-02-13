@@ -10,6 +10,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { PasswordInterceptor } from './interceptors/password-interceptor.interceptor';
 import { CartModule } from './modules/cart/cart.module';
 import { LikesModule } from './modules/likes/likes.module';
+import { OrdersModule } from './modules/orders/orders.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { LikesModule } from './modules/likes/likes.module';
     UsersModule,
     ProductsModule,
     CartModule,
+    OrdersModule,
     LikesModule,
   ],
   providers: [
