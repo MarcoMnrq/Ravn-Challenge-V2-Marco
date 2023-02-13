@@ -13,7 +13,7 @@ export class LikesController {
 
   @Post()
   @ApiOperation({
-    summary: 'Mark a product as liked',
+    summary: 'Add a product to your wishlist',
   })
   create(@CurrentUser() user: User, @Body() createLikeDto: CreateLikeDto) {
     return this.likesService.create(user.id, createLikeDto);
@@ -21,7 +21,7 @@ export class LikesController {
 
   @Get()
   @ApiOperation({
-    summary: 'Get user liked products',
+    summary: 'Get all the products in your wishlist',
   })
   findAll(@CurrentUser() user: User, @Query('productId') productId?: string) {
     if (productId) {
@@ -32,7 +32,7 @@ export class LikesController {
 
   @Delete()
   @ApiOperation({
-    summary: 'Remove a like from a product',
+    summary: 'Remove a product from your wishlist',
   })
   remove(@Query('productId') productId: string, @CurrentUser() user: User) {
     return this.likesService.remove(user.id, +productId);

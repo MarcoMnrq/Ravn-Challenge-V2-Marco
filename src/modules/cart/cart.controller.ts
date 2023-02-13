@@ -22,7 +22,7 @@ export class CartController {
 
   @Post()
   @ApiOperation({
-    summary: 'Add product to shopping cart',
+    summary: 'Add product to your shopping cart',
   })
   create(@CurrentUser() user: User, @Body() addCartItemDto: AddCartItemDto) {
     return this.cartService.addItem(user.id, addCartItemDto);
@@ -30,7 +30,7 @@ export class CartController {
 
   @Get()
   @ApiOperation({
-    summary: 'Get all products in the shopping cart',
+    summary: 'Get all products in your shopping cart',
   })
   findAll(@CurrentUser() user: User) {
     return this.cartService.getItems(user.id);
@@ -38,7 +38,7 @@ export class CartController {
 
   @Patch(':id')
   @ApiOperation({
-    summary: 'Update a product quantity in the shopping cart',
+    summary: 'Update a product quantity in your shopping cart',
   })
   update(
     @Param('id') id: string,
@@ -50,7 +50,7 @@ export class CartController {
 
   @Delete(':id')
   @ApiOperation({
-    summary: 'Remove a product from the shopping cart',
+    summary: 'Remove a product from your shopping cart',
   })
   remove(@Param('id') id: string, @CurrentUser() user: User) {
     return this.cartService.removeItem(+id, user.id);
