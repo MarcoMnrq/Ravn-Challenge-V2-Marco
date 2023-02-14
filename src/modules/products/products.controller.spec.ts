@@ -31,6 +31,7 @@ describe('ProductsController', () => {
         description: 'This is a test product',
         category: 'Test Category',
         imageUrl: '',
+        isVisible: true,
         price: 10,
         stock: 5,
       };
@@ -59,6 +60,7 @@ describe('ProductsController', () => {
           description: 'This is a test product',
           category: 'Test Category',
           imageUrl: '',
+          isVisible: true,
           price: 10,
           stock: 5,
           createdAt: new Date(),
@@ -70,6 +72,7 @@ describe('ProductsController', () => {
           description: 'This is a test product',
           category: 'Test Category',
           imageUrl: '',
+          isVisible: false,
           price: 10,
           stock: 5,
           createdAt: new Date(),
@@ -83,6 +86,41 @@ describe('ProductsController', () => {
     });
   });
 
+  describe('findAllPublic', () => {
+    it('should get an array of public products', async () => {
+      const result: Product[] = [
+        {
+          id: 1,
+          name: 'Test Product',
+          description: 'This is a test product',
+          category: 'Test Category',
+          imageUrl: '',
+          isVisible: true,
+          price: 10,
+          stock: 5,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: 2,
+          name: 'Test Product',
+          description: 'This is a test product',
+          category: 'Test Category',
+          imageUrl: '',
+          isVisible: true,
+          price: 10,
+          stock: 5,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+      jest
+        .spyOn(service, 'findAllPublic')
+        .mockImplementation(() => Promise.resolve(result));
+      expect(await controller.findAllPublic()).toEqual(result);
+    });
+  });
+
   describe('findOne', () => {
     it('should get a single product', async () => {
       const result: Product = {
@@ -91,6 +129,7 @@ describe('ProductsController', () => {
         description: 'This is a test product',
         category: 'Test Category',
         imageUrl: '',
+        isVisible: true,
         price: 10,
         stock: 5,
         createdAt: new Date(),
@@ -110,6 +149,7 @@ describe('ProductsController', () => {
         description: 'This is a test product',
         category: 'Test Category',
         imageUrl: '',
+        isVisible: true,
         price: 10,
         stock: 5,
       };
@@ -119,6 +159,7 @@ describe('ProductsController', () => {
         description: 'This is a test product',
         category: 'Test Category',
         imageUrl: '',
+        isVisible: true,
         price: 10,
         stock: 5,
         createdAt: new Date(),
@@ -144,6 +185,7 @@ describe('ProductsController', () => {
         description: 'This is a test product',
         category: 'Test Category',
         imageUrl: '',
+        isVisible: true,
         price: 10,
         stock: 5,
         createdAt: new Date(),

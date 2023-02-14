@@ -34,6 +34,10 @@ export class ProductsService {
     return this.prisma.product.findMany();
   }
 
+  /**
+   * It returns all products that are visible
+   * @returns An array of products that are visible.
+   */
   async findAllPublic() {
     return this.prisma.product.findMany({
       where: {
@@ -84,7 +88,6 @@ export class ProductsService {
   async remove(id: number) {
     await this.findOne(id);
     try {
-      await this.findOne(id);
       const deletedProduct = await this.prisma.product.delete({
         where: {
           id: id,
