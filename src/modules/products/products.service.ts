@@ -34,6 +34,14 @@ export class ProductsService {
     return this.prisma.product.findMany();
   }
 
+  async findAllPublic() {
+    return this.prisma.product.findMany({
+      where: {
+        isVisible: true,
+      },
+    });
+  }
+
   /**
    * It finds a product by its id, and if it doesn't exist, it throws an error
    * @param {number} id - number - The id of the product we want to find.

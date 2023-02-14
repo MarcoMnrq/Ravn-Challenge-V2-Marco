@@ -4,6 +4,7 @@ import { CreateLikeDto } from './dto/create-like.dto';
 import { CurrentUser } from '../../decorators/current-user.decorator';
 import { User } from '@prisma/client';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UseRoles } from 'nest-access-control';
 
 @ApiBearerAuth()
 @ApiTags('Likes / Wishlist')
@@ -12,6 +13,11 @@ export class LikesController {
   constructor(private readonly likesService: LikesService) {}
 
   @Post()
+  @UseRoles({
+    resource: 'like',
+    action: 'create',
+    possession: 'own',
+  })
   @ApiOperation({
     summary: 'Add a product to your wishlist',
   })
@@ -20,6 +26,11 @@ export class LikesController {
   }
 
   @Get()
+  @UseRoles({
+    resource: 'like',
+    action: 'read',
+    possession: 'own',
+  })
   @ApiOperation({
     summary: 'Get all the products in your wishlist',
   })
@@ -31,6 +42,11 @@ export class LikesController {
   }
 
   @Delete()
+  @UseRoles({
+    resource: 'like',
+    action: 'delete',
+    possession: 'own',
+  })
   @ApiOperation({
     summary: 'Remove a product from your wishlist',
   })

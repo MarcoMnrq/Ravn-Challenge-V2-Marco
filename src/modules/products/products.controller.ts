@@ -36,7 +36,20 @@ export class ProductsController {
   }
 
   @ApiOperation({
-    summary: 'Get all the visible products',
+    summary: 'Get all the products (visible only)',
+  })
+  @Get('public')
+  @UseRoles({
+    resource: 'public-product',
+    action: 'read',
+    possession: 'any',
+  })
+  findAllPublic() {
+    return this.productsService.findAllPublic();
+  }
+
+  @ApiOperation({
+    summary: 'Get all the products',
   })
   @Get()
   @UseRoles({

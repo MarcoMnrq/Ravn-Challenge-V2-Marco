@@ -15,7 +15,7 @@ roles
   .readAny('product')
 
   .grant(AppRoles.CLIENT)
-  .readAny('product');
+  .read('public-product');
 
 roles
   .grant(AppRoles.CLIENT)
@@ -25,3 +25,13 @@ roles
   .grant(AppRoles.MANAGER)
   .createOwn('order')
   .readAny('order');
+
+roles
+  .grant([AppRoles.CLIENT, AppRoles.MANAGER])
+  .createOwn('cart-item')
+  .readOwn('cart-item');
+
+roles
+  .grant([AppRoles.CLIENT, AppRoles.MANAGER])
+  .createOwn('like')
+  .readOwn('like');
