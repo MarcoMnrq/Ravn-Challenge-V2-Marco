@@ -28,21 +28,33 @@ describe('UsersService', () => {
         lastName: 'Doe',
         password: 'jhondoe',
       };
-
-      const newProduct: User = {
+      const newUser: User = {
         id: 1,
-        name: createProductDto.name,
-        description: createProductDto.description,
-        category: createProductDto.category,
-        price: createProductDto.price,
-        stock: createProductDto.stock,
-        isVisible: createProductDto.isVisible,
-        imageUrl: createProductDto.imageUrl,
+        ...createUserDto,
+        roles: ['CLIENT'],
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      prisma.product.create.mockResolvedValueOnce(newProduct);
-      expect(await service.create(createProductDto)).toEqual(newProduct);
+      prisma.user.create.mockResolvedValueOnce(newUser);
+      expect(await service.create(createUserDto)).toEqual(newUser);
+    });
+  });
+
+  describe('findOneByEmail', () => {
+    it('should return a user', async () => {
+      const existingEmail = 'jhon.doe@gmail.com';
+      const existingUser: User = {
+        id: 1,
+        email: 'jhon.doe@gmail.com',
+        firstName: 'Jhon',
+        lastName: 'Doe',
+        password: 'jhondoe',
+        roles: ['CLIENT'],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      prisma.user.findUnique.mockResolvedValueOnce(existingUser);
+      expect(await service.findOneByEmail(existingEmail)).toEqual(existingUser);
     });
   });
 
