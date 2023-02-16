@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Product } from '@prisma/client';
+import { PaginationResponseDto } from '../../common/dto/pagination-response.dto';
 import { PrismaModule } from '../../database/prisma.module';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -81,8 +82,24 @@ describe('ProductsController', () => {
       ];
       jest
         .spyOn(service, 'findAll')
-        .mockImplementation(() => Promise.resolve(result));
-      expect(await controller.findAll()).toEqual(result);
+        .mockImplementation(() =>
+          Promise.resolve(
+            new PaginationResponseDto(result, result.length, 1, 10),
+          ),
+        );
+      expect(
+        await controller.findAll({
+          limit: 10,
+          page: 1,
+        }),
+      ).toEqual({
+        items: result,
+        total: 2,
+        page: 1,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false,
+      });
     });
   });
 
@@ -115,9 +132,25 @@ describe('ProductsController', () => {
         },
       ];
       jest
-        .spyOn(service, 'findAllPublic')
-        .mockImplementation(() => Promise.resolve(result));
-      expect(await controller.findAllPublic()).toEqual(result);
+        .spyOn(service, 'findAll')
+        .mockImplementation(() =>
+          Promise.resolve(
+            new PaginationResponseDto(result, result.length, 1, 10),
+          ),
+        );
+      expect(
+        await controller.findAll({
+          limit: 10,
+          page: 1,
+        }),
+      ).toEqual({
+        items: result,
+        total: 2,
+        page: 1,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false,
+      });
     });
   });
 

@@ -80,48 +80,12 @@ describe('ProductsService', () => {
     ];
     it('should return all products', async () => {
       prisma.product.findMany.mockResolvedValueOnce(products);
-      const result = await service.findAll();
-      expect(prisma.product.findMany).toHaveBeenCalled();
-      expect(result).toEqual(products);
-    });
-  });
-
-  describe('findAllPublic', () => {
-    const products: Product[] = [
-      {
-        id: 1,
-        name: 'product 1',
-        description: 'product 1 description',
-        category: 'category 1',
-        price: 10,
-        stock: 10,
-        isVisible: true,
-        imageUrl: '',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: 2,
-        name: 'product 2',
-        description: 'product 2 description',
-        category: 'category 2',
-        price: 20,
-        stock: 20,
-        isVisible: true,
-        imageUrl: '',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ];
-    it('should return all visible products', async () => {
-      prisma.product.findMany.mockResolvedValueOnce(products);
-      const result = await service.findAllPublic();
-      expect(prisma.product.findMany).toHaveBeenCalledWith({
-        where: {
-          isVisible: true,
-        },
+      const result = await service.findAll({
+        limit: 10,
+        page: 1,
       });
-      expect(result).toEqual(products);
+      expect(prisma.product.findMany).toHaveBeenCalled();
+      expect(result.items).toEqual(products);
     });
   });
 
