@@ -16,7 +16,7 @@ export class OrdersService {
    */
   async create(userId: number) {
     const cart = await this.cartService.getItems(userId);
-    if (cart.meta.totalItems === 0) {
+    if (cart.totalItems === 0) {
       throw new BadRequestException('Your cart is empty');
     }
     const orderItems = cart.items.map((item) => ({
@@ -30,7 +30,7 @@ export class OrdersService {
     }));
     const order = await this.prisma.order.create({
       data: {
-        total: cart.meta.totalPrice,
+        total: cart.totalPrice,
         items: {
           create: orderItems,
         },

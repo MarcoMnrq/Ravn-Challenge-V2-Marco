@@ -37,7 +37,7 @@ describe('OrdersService', () => {
   describe('create', () => {
     it('should throw a BadRequestException when the cart is empty', async () => {
       const userId = 1;
-      const cart = { items: [], meta: { totalItems: 0, totalPrice: 0 } };
+      const cart = { items: [], totalItems: 0, totalPrice: 0 };
       jest.spyOn(cartService, 'getItems').mockResolvedValueOnce(cart);
       await expect(service.create(userId)).rejects.toThrow(
         new BadRequestException('Your cart is empty'),
@@ -47,7 +47,8 @@ describe('OrdersService', () => {
     it('should create an order when the cart is not empty', async () => {
       const userId = 1;
       const cart = {
-        meta: { totalItems: 1, totalPrice: 20 },
+        totalItems: 1,
+        totalPrice: 20,
         items: [
           {
             id: 1,
@@ -90,14 +91,14 @@ describe('OrdersService', () => {
       ];
       jest.spyOn(cartService, 'getItems').mockResolvedValueOnce(cart);
       prisma.order.create.mockResolvedValueOnce(order);
-      jest.spyOn(cartService, 'clearCart').mockResolvedValueOnce(undefined);
+      jest.spyOn(cartService, 'clearCart').mockResolvedValue(undefined);
 
       const result = await service.create(userId);
 
       expect(result).toEqual(order);
       expect(prisma.order.create).toHaveBeenCalledWith({
         data: {
-          total: cart.meta.totalPrice,
+          total: cart.totalPrice,
           items: { create: orderItems },
           user: { connect: { id: userId } },
         },

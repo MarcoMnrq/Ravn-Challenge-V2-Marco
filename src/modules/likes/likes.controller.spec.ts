@@ -1,6 +1,6 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Like, Product, User } from '@prisma/client';
+import { Like, User } from '@prisma/client';
 import { PrismaModule } from '../../database/prisma.module';
 import { ProductsModule } from '../products/products.module';
 import { CreateLikeDto } from './dto/create-like.dto';
@@ -88,6 +88,7 @@ describe('LikesController', () => {
 
       expect(await controller.findAll(mockUser)).toEqual([result]);
     });
+
     it('should return a specific product in the wishlist', async () => {
       jest
         .spyOn(service, 'findOne')

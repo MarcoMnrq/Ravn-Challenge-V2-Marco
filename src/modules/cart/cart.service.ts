@@ -81,10 +81,8 @@ export class CartService {
     }
     return {
       items: cartItems,
-      meta: {
-        totalItems: cartItems.length,
-        totalPrice: totalPrice,
-      },
+      totalItems: cartItems.length,
+      totalPrice: totalPrice,
     };
   }
 
@@ -191,7 +189,7 @@ export class CartService {
    */
   async clearCart(userId: number) {
     const cart = await this.retrieveUserCart(userId);
-    await this.prisma.cartItem.deleteMany({
+    return this.prisma.cartItem.deleteMany({
       where: {
         cartId: cart.id,
       },
