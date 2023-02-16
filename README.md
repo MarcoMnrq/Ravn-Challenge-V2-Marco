@@ -1,8 +1,8 @@
-# Tiny Store Challenge 🛍️
+# 🛍️ Tiny Store Challenge
 
 TinyStore is a REST API for a e-commerce platform. Functionalities include handling products, shopping cart, orders, authentication, and user preferences. This project is built using Node.js, Nest.js, and PostgreSQL, ensuring fast and efficient data handling. The different modules have been thoroughly tested and secure, ensuring that sensitive information is always protected.
 
-## Environment Variables
+## 🔐 Environment Variables
 
 To run this project, you will need to add the following environment variables to your .env file
 
@@ -10,7 +10,7 @@ To run this project, you will need to add the following environment variables to
 
 `DATABASE_URL`
 
-## Run Locally
+## 💻 Run Locally
 
 Clone the project
 
@@ -36,10 +36,18 @@ Start the server
   yarn start:dev
 ```
 
-## Running Tests
+## 🧪 Running Tests
 
 To run tests, run the following command
 
 ```bash
   yarn test
 ```
+
+## 🌟 Features
+
+- Authentication using JWT Strategy, Guards & Custom Decorators
+- Authorization based on RBAC with two roles: CUSTOMER & MANAGER
+- Clean folder structure, commented code & API documentation with Swagger
+- Prisma Global Module, Singletons for S3 Upload Service & various utilities
+- Managers can create, read, update & delete Products. Clients can read visible products
