@@ -3,7 +3,12 @@ import { LikesService } from './likes.service';
 import { CreateLikeDto } from './dto/create-like.dto';
 import { CurrentUser } from '../../decorators/current-user.decorator';
 import { User } from '@prisma/client';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UseRoles } from 'nest-access-control';
 
 @ApiBearerAuth()
@@ -33,6 +38,12 @@ export class LikesController {
   })
   @ApiOperation({
     summary: 'Get all the products in your wishlist',
+  })
+  @ApiQuery({
+    name: 'productId',
+    required: false,
+    type: String,
+    description: 'Get the state for a specific product',
   })
   findAll(@CurrentUser() user: User, @Query('productId') productId?: string) {
     if (productId) {

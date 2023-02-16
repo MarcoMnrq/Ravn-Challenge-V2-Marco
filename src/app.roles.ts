@@ -12,10 +12,7 @@ roles
   .createAny('product')
   .updateAny('product')
   .deleteAny('product')
-  .readAny('product')
-
-  .grant(AppRoles.CLIENT)
-  .read('public-product');
+  .readAny('product');
 
 roles
   .grant(AppRoles.CLIENT)

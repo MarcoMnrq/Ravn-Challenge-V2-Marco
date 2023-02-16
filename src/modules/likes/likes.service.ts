@@ -15,6 +15,13 @@ export class LikesService {
     private readonly productsService: ProductsService,
   ) {}
 
+  /**
+   * It creates a new like for a product, but only if the product is visible and the user hasn't
+   * already liked it
+   * @param {number} userId - number - the id of the user who is adding the product to the wishlist
+   * @param {CreateLikeDto} createLikeDto - CreateLikeDto
+   * @returns A promise of a like object
+   */
   async create(userId: number, createLikeDto: CreateLikeDto): Promise<Like> {
     const existingWishlistItem = await this.prisma.like.findFirst({
       where: {
@@ -25,7 +32,12 @@ export class LikesService {
     if (existingWishlistItem) {
       throw new BadRequestException(`Product is already in wishlist`);
     }
-    const product = await this.productsService.findOne(createLikeDto.productId);
+    const product = await this.productsService.findOne(
+      createLikeDto.productId,
+      {
+        isVisible: true,
+      },
+    );
     return this.prisma.like.create({
       data: {
         product: {
@@ -42,20 +54,37 @@ export class LikesService {
     });
   }
 
+  /**
+   * It returns a list of all the likes for a given user
+   * @param {number} userId - number
+   * @returns An array of Like objects
+   */
   async findAll(userId: number): Promise<Like[]> {
     const items = await this.prisma.like.findMany({
       where: {
         userId: userId,
       },
+      include: {
+        product: true,
+      },
     });
     return items;
   }
 
-  async findOne(userId: number, productId: number) {
+  /**
+   * Finds a like by userId and productId
+   * @param {number} userId - number - The user's ID
+   * @param {number} productId - number - The ID of the product to be added to the wishlist
+   * @returns A Like object
+   */
+  async findOne(userId: number, productId: number): Promise<Like> {
     const wishlistItem = await this.prisma.like.findFirst({
       where: {
         productId: productId,
         userId: userId,
+      },
+      include: {
+        product: true,
       },
     });
     if (!wishlistItem) {
@@ -66,12 +95,19 @@ export class LikesService {
     return wishlistItem;
   }
 
-  async remove(userId: number, productId: number) {
+  /**
+   * It deletes the like from the database
+   * @param {number} userId - The id of the user who liked the product.
+   * @param {number} productId - The id of the product that the user is liking.
+   * @returns The deleted item.
+   */
+  async remove(userId: number, productId: number): Promise<Like> {
     const existingItem = await this.findOne(userId, productId);
-    return this.prisma.like.delete({
+    const deletedItem = await this.prisma.like.delete({
       where: {
         id: existingItem.id,
       },
     });
+    return deletedItem;
   }
 }

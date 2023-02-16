@@ -14,8 +14,8 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UseRoles } from 'nest-access-control';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import { ExposedEndpoint } from '../../decorators/exposed-endpoint.decorator';
 
-@ApiBearerAuth()
 @ApiTags('Products')
 @Controller({
   path: 'products',
@@ -24,10 +24,11 @@ import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @Post()
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Create a new product',
   })
-  @Post()
   @UseRoles({
     resource: 'product',
     action: 'create',
@@ -37,14 +38,10 @@ export class ProductsController {
     return this.productsService.create(createProductDto);
   }
 
-  @ApiOperation({
-    summary: 'Get all the products (visible only)',
-  })
   @Get('public')
-  @UseRoles({
-    resource: 'public-product',
-    action: 'read',
-    possession: 'any',
+  @ExposedEndpoint()
+  @ApiOperation({
+    summary: 'Get all the published products',
   })
   findAllPublic(@Query() paginationQueryDto: PaginationQueryDto) {
     return this.productsService.findAll(paginationQueryDto, {
@@ -52,10 +49,11 @@ export class ProductsController {
     });
   }
 
+  @Get()
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all the products',
   })
-  @Get()
   @UseRoles({
     resource: 'product',
     action: 'read',
@@ -65,10 +63,11 @@ export class ProductsController {
     return this.productsService.findAll(paginationQueryDto);
   }
 
+  @Get(':id')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Find one specific product',
   })
-  @Get(':id')
   @UseRoles({
     resource: 'product',
     action: 'read',
@@ -78,10 +77,11 @@ export class ProductsController {
     return this.productsService.findOne(+id);
   }
 
+  @Patch(':id')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Update a single product',
   })
-  @Patch(':id')
   @UseRoles({
     resource: 'product',
     action: 'update',
@@ -91,10 +91,11 @@ export class ProductsController {
     return this.productsService.update(+id, updateProductDto);
   }
 
+  @Delete(':id')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Delete a product',
   })
-  @Delete(':id')
   @UseRoles({
     resource: 'product',
     action: 'delete',
