@@ -91,7 +91,7 @@ describe('OrdersService', () => {
       ];
       jest.spyOn(cartService, 'getItems').mockResolvedValueOnce(cart);
       prisma.order.create.mockResolvedValueOnce(order);
-      jest.spyOn(cartService, 'clearCart').mockResolvedValue(undefined);
+      jest.spyOn(cartService, 'clearCart').mockResolvedValue({ count: 1 });
 
       const result = await service.create(userId);
 
