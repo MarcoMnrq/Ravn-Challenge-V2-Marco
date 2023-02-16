@@ -1,12 +1,15 @@
+import { Transform, TransformFnParams } from 'class-transformer';
 import { IsNumber, Min, Max } from 'class-validator';
 
 export class PaginationQueryDto {
   @IsNumber()
   @Min(1)
   @Max(50)
-  limit: number;
+  @Transform(({ value }: TransformFnParams) => parseInt(value, 10))
+  readonly limit: number;
 
   @IsNumber()
   @Min(1)
-  page: number;
+  @Transform(({ value }: TransformFnParams) => parseInt(value, 10))
+  readonly page: number;
 }

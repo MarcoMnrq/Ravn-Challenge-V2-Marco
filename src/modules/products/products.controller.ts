@@ -47,7 +47,9 @@ export class ProductsController {
     possession: 'any',
   })
   findAllPublic(@Query() paginationQueryDto: PaginationQueryDto) {
-    return this.productsService.findAllPublic(paginationQueryDto);
+    return this.productsService.findAll(paginationQueryDto, {
+      isVisible: true,
+    });
   }
 
   @ApiOperation({
@@ -59,8 +61,8 @@ export class ProductsController {
     action: 'read',
     possession: 'any',
   })
-  findAll() {
-    return this.productsService.findAll();
+  findAll(@Query() paginationQueryDto: PaginationQueryDto) {
+    return this.productsService.findAll(paginationQueryDto);
   }
 
   @ApiOperation({

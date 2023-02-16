@@ -16,7 +16,11 @@ export class PaginationResponseDto<T> {
     this.total = total;
     this.page = page;
     this.limit = limit;
-    this.hasNext = (page + 1) * limit < total;
-    this.hasPrev = page > 0;
+    this.hasNext = page * limit < total;
+    this.hasPrev = page > 1;
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.total / this.limit);
   }
 }

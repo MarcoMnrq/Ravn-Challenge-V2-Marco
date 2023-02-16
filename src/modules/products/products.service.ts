@@ -29,27 +29,24 @@ export class ProductsService {
   }
 
   /**
-   * It returns all the products from the database
-   * @returns An array of products
+   * It returns a paginated list of products, where the pagination is based on the limit and page query
+   * parameters
+   * @param {PaginationQueryDto} paginationQueryDto - PaginationQueryDto
+   * @param [conditions] - This is an optional parameter that allows you to pass in a set of conditions
+   * to filter the products.
+   * @returns A paginated list of products.
    */
-  async findAll() {
-    return this.prisma.product.findMany();
-  }
-
-  /**
-   * It returns all products that are visible
-   * @returns An array of products that are visible.
-   */
-  async findAllPublic(
+  async findAll(
     paginationQueryDto: PaginationQueryDto,
+    conditions?: Record<string, any>,
   ): Promise<PaginationResponseDto<Product>> {
     const { limit, page } = paginationQueryDto;
     const items = await this.prisma.product.findMany({
       where: {
-        isVisible: true,
+        ...conditions,
       },
       take: limit,
-      skip: page * limit,
+      skip: (page - 1) * limit,
     });
     const total = await this.prisma.product.count();
     return new PaginationResponseDto(items, total, page, limit);
@@ -60,9 +57,9 @@ export class ProductsService {
    * @param {number} id - number - The id of the product we want to find.
    * @returns The product with the id that was passed in.
    */
-  async findOne(id: number) {
+  async findOne(id: number, conditions?: Record<string, any>) {
     const product = await this.prisma.product.findUnique({
-      where: { id: id },
+      where: { id: id, ...conditions },
     });
     if (!product) {
       throw new NotFoundException(`Product #${id} not found`);
