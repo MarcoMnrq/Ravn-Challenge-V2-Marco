@@ -57,17 +57,4 @@ export class OrdersController {
   findAllByUserId(@CurrentUser() user: User) {
     return this.ordersService.findAll(user.id);
   }
-
-  @ApiOperation({
-    summary: 'Find one specific order',
-  })
-  @Get(':id')
-  @UseRoles({
-    resource: 'order',
-    action: 'read',
-    possession: 'any',
-  })
-  findOne(@Param('id') id: string) {
-    return this.ordersService.findOne(+id);
-  }
 }

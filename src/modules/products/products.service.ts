@@ -4,6 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Product } from '@prisma/client';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import { PaginationResponseDto } from '../../common/dto/pagination-response.dto';
 import { PrismaService } from '../../database/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -38,12 +40,19 @@ export class ProductsService {
    * It returns all products that are visible
    * @returns An array of products that are visible.
    */
-  async findAllPublic() {
-    return this.prisma.product.findMany({
+  async findAllPublic(
+    paginationQueryDto: PaginationQueryDto,
+  ): Promise<PaginationResponseDto<Product>> {
+    const { limit, page } = paginationQueryDto;
+    const items = await this.prisma.product.findMany({
       where: {
         isVisible: true,
       },
+      take: limit,
+      skip: page * limit,
     });
+    const total = await this.prisma.product.count();
+    return new PaginationResponseDto(items, total, page, limit);
   }
 
   /**

@@ -6,12 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UseRoles } from 'nest-access-control';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 
 @ApiBearerAuth()
 @ApiTags('Products')
@@ -44,8 +46,8 @@ export class ProductsController {
     action: 'read',
     possession: 'any',
   })
-  findAllPublic() {
-    return this.productsService.findAllPublic();
+  findAllPublic(@Query() paginationQueryDto: PaginationQueryDto) {
+    return this.productsService.findAllPublic(paginationQueryDto);
   }
 
   @ApiOperation({

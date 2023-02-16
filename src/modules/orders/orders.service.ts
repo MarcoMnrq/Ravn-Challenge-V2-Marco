@@ -9,6 +9,11 @@ export class OrdersService {
     private readonly cartService: CartService,
   ) {}
 
+  /**
+   * We get the cart, check if it's empty, create an order, and clear the cart
+   * @param {number} userId - number - The userId of the user who is placing the order.
+   * @returns The order object
+   */
   async create(userId: number) {
     const cart = await this.cartService.getItems(userId);
     if (cart.meta.totalItems === 0) {
@@ -43,9 +48,15 @@ export class OrdersService {
     return order;
   }
 
+  /**
+   * If a userId is passed in, then we'll use it to filter the results, otherwise we'll return all
+   * orders
+   * @param {number} [userId] - number - This is the userId that we want to filter by. If it's not
+   * provided, we want to return all orders.
+   * @returns An array of orders.
+   */
   findAll(userId?: number) {
     const whereClause = userId ? { userId } : {};
-    console.log(whereClause);
     return this.prisma.order.findMany({
       where: whereClause,
       include: {
@@ -64,9 +75,5 @@ export class OrdersService {
         },
       },
     });
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
   }
 }

@@ -18,7 +18,7 @@ describe('ProductsService', () => {
       .overrideProvider(PrismaService)
       .useValue(mockDeep<PrismaClient>())
       .compile();
-    service = module.get(ProductsService);
+    service = module.get<ProductsService>(ProductsService);
     prisma = module.get(PrismaService);
   });
 
