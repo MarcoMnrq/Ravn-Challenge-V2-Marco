@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Product } from '@prisma/client';
+import { PaginationResponseDto } from '../../common/dto/pagination-response.dto';
 import { PrismaModule } from '../../database/prisma.module';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -31,6 +32,7 @@ describe('ProductsController', () => {
         description: 'This is a test product',
         category: 'Test Category',
         imageUrl: '',
+        isVisible: true,
         price: 10,
         stock: 5,
       };
@@ -59,6 +61,7 @@ describe('ProductsController', () => {
           description: 'This is a test product',
           category: 'Test Category',
           imageUrl: '',
+          isVisible: true,
           price: 10,
           stock: 5,
           createdAt: new Date(),
@@ -70,6 +73,7 @@ describe('ProductsController', () => {
           description: 'This is a test product',
           category: 'Test Category',
           imageUrl: '',
+          isVisible: false,
           price: 10,
           stock: 5,
           createdAt: new Date(),
@@ -78,8 +82,75 @@ describe('ProductsController', () => {
       ];
       jest
         .spyOn(service, 'findAll')
-        .mockImplementation(() => Promise.resolve(result));
-      expect(await controller.findAll()).toEqual(result);
+        .mockImplementation(() =>
+          Promise.resolve(
+            new PaginationResponseDto(result, result.length, 1, 10),
+          ),
+        );
+      expect(
+        await controller.findAll({
+          limit: 10,
+          page: 1,
+        }),
+      ).toEqual({
+        items: result,
+        total: 2,
+        page: 1,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false,
+      });
+    });
+  });
+
+  describe('findAllPublic', () => {
+    it('should get an array of public products', async () => {
+      const result: Product[] = [
+        {
+          id: 1,
+          name: 'Test Product',
+          description: 'This is a test product',
+          category: 'Test Category',
+          imageUrl: '',
+          isVisible: true,
+          price: 10,
+          stock: 5,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: 2,
+          name: 'Test Product',
+          description: 'This is a test product',
+          category: 'Test Category',
+          imageUrl: '',
+          isVisible: true,
+          price: 10,
+          stock: 5,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+      jest
+        .spyOn(service, 'findAll')
+        .mockImplementation(() =>
+          Promise.resolve(
+            new PaginationResponseDto(result, result.length, 1, 10),
+          ),
+        );
+      expect(
+        await controller.findAll({
+          limit: 10,
+          page: 1,
+        }),
+      ).toEqual({
+        items: result,
+        total: 2,
+        page: 1,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false,
+      });
     });
   });
 
@@ -91,6 +162,7 @@ describe('ProductsController', () => {
         description: 'This is a test product',
         category: 'Test Category',
         imageUrl: '',
+        isVisible: true,
         price: 10,
         stock: 5,
         createdAt: new Date(),
@@ -110,6 +182,7 @@ describe('ProductsController', () => {
         description: 'This is a test product',
         category: 'Test Category',
         imageUrl: '',
+        isVisible: true,
         price: 10,
         stock: 5,
       };
@@ -119,6 +192,7 @@ describe('ProductsController', () => {
         description: 'This is a test product',
         category: 'Test Category',
         imageUrl: '',
+        isVisible: true,
         price: 10,
         stock: 5,
         createdAt: new Date(),
@@ -130,8 +204,8 @@ describe('ProductsController', () => {
       expect(await controller.update('1', updateProductDto)).toEqual({
         id: 1,
         ...updateProductDto,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
       });
     });
   });
@@ -144,6 +218,7 @@ describe('ProductsController', () => {
         description: 'This is a test product',
         category: 'Test Category',
         imageUrl: '',
+        isVisible: true,
         price: 10,
         stock: 5,
         createdAt: new Date(),

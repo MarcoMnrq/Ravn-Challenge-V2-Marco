@@ -1,17 +1,9 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { CurrentUser } from 'src/decorators/current-user.decorator';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CurrentUser } from '../../decorators/current-user.decorator';
 import { User } from '@prisma/client';
+import { UseRoles } from 'nest-access-control';
 
 @ApiBearerAuth()
 @ApiTags('Orders')
@@ -19,18 +11,42 @@ import { User } from '@prisma/client';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
+  @ApiOperation({
+    summary: 'Place an order based on the products in your cart',
+  })
   @Post()
-  create(@CurrentUser() user: User, @Body() createOrderDto: CreateOrderDto) {
-    return this.ordersService.create(user.id, createOrderDto);
+  @UseRoles({
+    resource: 'order',
+    action: 'create',
+    possession: 'own',
+  })
+  create(@CurrentUser() user: User) {
+    return this.ordersService.create(user.id);
   }
 
+  @ApiOperation({
+    summary: 'Get all the client orders',
+  })
   @Get()
+  @UseRoles({
+    resource: 'order',
+    action: 'read',
+    possession: 'any',
+  })
   findAll() {
     return this.ordersService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ordersService.findOne(+id);
+  @ApiOperation({
+    summary: 'Get all your placed orders',
+  })
+  @Get('my')
+  @UseRoles({
+    resource: 'order',
+    action: 'read',
+    possession: 'own',
+  })
+  findAllByUserId(@CurrentUser() user: User) {
+    return this.ordersService.findAll(user.id);
   }
 }

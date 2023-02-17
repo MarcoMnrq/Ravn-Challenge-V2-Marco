@@ -4,6 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Product } from '@prisma/client';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import { PaginationResponseDto } from '../../common/dto/pagination-response.dto';
 import { PrismaService } from '../../database/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -27,11 +29,27 @@ export class ProductsService {
   }
 
   /**
-   * It returns all the products from the database
-   * @returns An array of products
+   * It returns a paginated list of products, where the pagination is based on the limit and page query
+   * parameters
+   * @param {PaginationQueryDto} paginationQueryDto - PaginationQueryDto
+   * @param [conditions] - This is an optional parameter that allows you to pass in a set of conditions
+   * to filter the products.
+   * @returns A paginated list of products.
    */
-  async findAll() {
-    return this.prisma.product.findMany();
+  async findAll(
+    paginationQueryDto: PaginationQueryDto,
+    conditions?: Record<string, any>,
+  ): Promise<PaginationResponseDto<Product>> {
+    const { limit, page } = paginationQueryDto;
+    const items = await this.prisma.product.findMany({
+      where: {
+        ...conditions,
+      },
+      take: limit,
+      skip: (page - 1) * limit,
+    });
+    const total = await this.prisma.product.count();
+    return new PaginationResponseDto(items, total, page, limit);
   }
 
   /**
@@ -39,9 +57,9 @@ export class ProductsService {
    * @param {number} id - number - The id of the product we want to find.
    * @returns The product with the id that was passed in.
    */
-  async findOne(id: number) {
+  async findOne(id: number, conditions?: Record<string, any>) {
     const product = await this.prisma.product.findUnique({
-      where: { id: id },
+      where: { id: id, ...conditions },
     });
     if (!product) {
       throw new NotFoundException(`Product #${id} not found`);
@@ -75,14 +93,30 @@ export class ProductsService {
    */
   async remove(id: number) {
     await this.findOne(id);
-    const deletedProduct = await this.prisma.product.delete({
-      where: {
-        id: id,
-      },
-    });
-    return deletedProduct;
+    try {
+      const deletedProduct = await this.prisma.product.delete({
+        where: {
+          id: id,
+        },
+      });
+      return deletedProduct;
+    } catch (error) {
+      if (error.message.includes('Foreign key constraint failed')) {
+        throw new BadRequestException(
+          'This product is referenced in one or more orders',
+        );
+      }
+      throw error;
+    }
   }
 
+  /**
+   * It finds a product by its ID, checks if it's visible, checks if it's in stock, and checks if the
+   * requested quantity is available
+   * @param {number} id - number - The id of the product we want to find.
+   * @param {number} quantity - number - the quantity of the product that the user wants to buy
+   * @returns A product
+   */
   async findOneAndCheckAvailability(
     id: number,
     quantity: number,

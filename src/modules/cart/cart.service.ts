@@ -67,6 +67,9 @@ export class CartService {
     const cartItems = await this.prisma.cartItem.findMany({
       where: {
         cartId: cart.id,
+        product: {
+          isVisible: true,
+        },
       },
       include: {
         product: true,
@@ -78,10 +81,8 @@ export class CartService {
     }
     return {
       items: cartItems,
-      meta: {
-        totalItems: cartItems.length,
-        totalPrice: totalPrice,
-      },
+      totalItems: cartItems.length,
+      totalPrice: totalPrice,
     };
   }
 
@@ -180,5 +181,18 @@ export class CartService {
       return newCart;
     }
     return cart;
+  }
+
+  /**
+   * It deletes all the cart items associated with a cart
+   * @param {number} userId - number - The user's id
+   */
+  async clearCart(userId: number) {
+    const cart = await this.retrieveUserCart(userId);
+    return this.prisma.cartItem.deleteMany({
+      where: {
+        cartId: cart.id,
+      },
+    });
   }
 }

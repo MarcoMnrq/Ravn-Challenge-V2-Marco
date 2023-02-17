@@ -1,4 +1,4 @@
-import { IsString, IsInt, IsNumber } from 'class-validator';
+import { IsString, IsInt, IsNumber, IsBoolean } from 'class-validator';
 
 export class CreateProductDto {
   @IsString()
@@ -6,6 +6,9 @@ export class CreateProductDto {
 
   @IsString()
   description: string;
+
+  @IsBoolean()
+  isVisible: boolean;
 
   @IsString()
   imageUrl: string;

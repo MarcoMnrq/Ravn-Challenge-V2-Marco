@@ -18,7 +18,7 @@ describe('ProductsService', () => {
       .overrideProvider(PrismaService)
       .useValue(mockDeep<PrismaClient>())
       .compile();
-    service = module.get(ProductsService);
+    service = module.get<ProductsService>(ProductsService);
     prisma = module.get(PrismaService);
   });
 
@@ -29,6 +29,7 @@ describe('ProductsService', () => {
         description: 'This is a test product',
         category: 'Test Category',
         imageUrl: '',
+        isVisible: true,
         price: 10,
         stock: 5,
       };
@@ -40,6 +41,7 @@ describe('ProductsService', () => {
         category: createProductDto.category,
         price: createProductDto.price,
         stock: createProductDto.stock,
+        isVisible: createProductDto.isVisible,
         imageUrl: createProductDto.imageUrl,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -58,6 +60,7 @@ describe('ProductsService', () => {
         category: 'category 1',
         price: 10,
         stock: 10,
+        isVisible: true,
         imageUrl: '',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -69,6 +72,7 @@ describe('ProductsService', () => {
         category: 'category 2',
         price: 20,
         stock: 20,
+        isVisible: false,
         imageUrl: '',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -76,9 +80,12 @@ describe('ProductsService', () => {
     ];
     it('should return all products', async () => {
       prisma.product.findMany.mockResolvedValueOnce(products);
-      const result = await service.findAll();
+      const result = await service.findAll({
+        limit: 10,
+        page: 1,
+      });
       expect(prisma.product.findMany).toHaveBeenCalled();
-      expect(result).toEqual(products);
+      expect(result.items).toEqual(products);
     });
   });
 
@@ -91,6 +98,7 @@ describe('ProductsService', () => {
       price: 10,
       stock: 10,
       imageUrl: '',
+      isVisible: true,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -129,6 +137,7 @@ describe('ProductsService', () => {
       price: 10,
       stock: 10,
       imageUrl: '',
+      isVisible: true,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -137,6 +146,7 @@ describe('ProductsService', () => {
       description: 'This is a test product',
       category: 'Test Category',
       imageUrl: '',
+      isVisible: true,
       price: 10,
       stock: 5,
     };
@@ -146,6 +156,7 @@ describe('ProductsService', () => {
       description: 'This is a test product',
       category: 'Test Category',
       imageUrl: '',
+      isVisible: true,
       price: 10,
       stock: 5,
       createdAt: new Date(),
@@ -187,13 +198,14 @@ describe('ProductsService', () => {
       price: 10,
       stock: 10,
       imageUrl: '',
+      isVisible: true,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
     describe('when product with ID exists', () => {
       it('should delete a product by id', async () => {
         prisma.product.findUnique.mockResolvedValueOnce(product);
-        prisma.product.delete.mockResolvedValue(product);
+        prisma.product.delete.mockResolvedValueOnce(product);
         const result = await service.remove(1);
         expect(prisma.product.findUnique).toHaveBeenCalledWith({
           where: {

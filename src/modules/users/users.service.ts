@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { User, UserRole } from '@prisma/client';
-import { PrismaService } from 'src/database/prisma.service';
+import { PrismaService } from '../../database/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import * as argon2 from 'argon2';
 
 @Injectable()
@@ -27,9 +26,5 @@ export class UsersService {
         email: email,
       },
     });
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
   }
 }
