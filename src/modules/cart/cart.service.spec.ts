@@ -48,7 +48,6 @@ describe('CartService', () => {
       name: 'Test Product',
       description: 'This is a test product',
       category: 'Test Category',
-      imageUrl: '',
       isVisible: true,
       stock: 5,
       createdAt: new Date(),

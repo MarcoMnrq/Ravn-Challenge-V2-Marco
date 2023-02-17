@@ -7,20 +7,23 @@ import {
   Param,
   Delete,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import {
   ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
   ApiOperation,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { UseRoles } from 'nest-access-control';
-import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { ExposedEndpoint } from '../../decorators/exposed-endpoint.decorator';
 import { SearchProductQueryDto } from './dto/search-product-query.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Products')
 @Controller({
@@ -42,6 +45,39 @@ export class ProductsController {
   })
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
+  }
+
+  @Post('products/:id/images/upload')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Upload a image for a product',
+  })
+  @UseRoles({
+    resource: 'product',
+    action: 'update',
+    possession: 'any',
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'File to upload',
+    type: 'multipart/form-data',
+  })
+  addImage(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
+    return this.productsService.addImage(+id, file);
+  }
+  @Delete('products/:id/images/:imageId')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Delete a image for a product',
+  })
+  @UseRoles({
+    resource: 'product',
+    action: 'update',
+    possession: 'any',
+  })
+  removeImage(@Param('id') id: string, @Param('imageId') imageId: string) {
+    return this.productsService.removeImage(+id, +imageId);
   }
 
   @Get('public/products')
