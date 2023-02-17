@@ -1,2 +1,2 @@
 web: yarn start:prod
-db-migrate: yarn prisma migrate up --experimental
+release: npx prisma migrate deploy
