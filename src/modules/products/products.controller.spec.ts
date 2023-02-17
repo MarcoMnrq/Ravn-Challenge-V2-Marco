@@ -204,8 +204,8 @@ describe('ProductsController', () => {
       expect(await controller.update('1', updateProductDto)).toEqual({
         id: 1,
         ...updateProductDto,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
       });
     });
   });
