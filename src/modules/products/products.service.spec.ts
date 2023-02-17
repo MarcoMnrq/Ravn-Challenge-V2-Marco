@@ -4,7 +4,7 @@ import { PrismaService } from '../../database/prisma.service';
 import { ProductsService } from './products.service';
 import { PrismaClient, Product } from '@prisma/client';
 import { CreateProductDto } from './dto/create-product.dto';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 describe('ProductsService', () => {
@@ -33,7 +33,6 @@ describe('ProductsService', () => {
         price: 10,
         stock: 5,
       };
-
       const newProduct: Product = {
         id: 1,
         name: createProductDto.name,
@@ -224,6 +223,81 @@ describe('ProductsService', () => {
         } catch (err) {
           expect(err).toBeInstanceOf(NotFoundException);
           expect(err.message).toEqual(`Product #${productId} not found`);
+        }
+      });
+    });
+  });
+
+  describe('findOneAndCheckAvailability', () => {
+    const product: Product = {
+      id: 1,
+      name: 'Product 1',
+      description: 'product 1 description',
+      category: 'category 1',
+      price: 10,
+      stock: 10,
+      imageUrl: '',
+      isVisible: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    describe('when the product does not exist', () => {
+      it('should throw the "NotFoundException"', async () => {
+        prisma.product.findUnique.mockResolvedValue(null);
+        try {
+          await service.findOneAndCheckAvailability(product.id, 5);
+        } catch (err) {
+          expect(err).toBeInstanceOf(NotFoundException);
+          expect(err.message).toEqual(`Product #${product.id} not found`);
+        }
+      });
+    });
+    describe('when the product exists but is not visible', () => {
+      it('should throw the "NotFoundException"', async () => {
+        prisma.product.findUnique.mockResolvedValue({
+          ...product,
+          isVisible: false,
+        });
+        try {
+          await service.findOneAndCheckAvailability(product.id, 5);
+        } catch (err) {
+          expect(err).toBeInstanceOf(NotFoundException);
+          expect(err.message).toEqual(`Product #${product.id} not found`);
+        }
+      });
+    });
+    describe('when the product exists, is visible, has stock, and quantity is less than stock', () => {
+      it('should return the product', async () => {
+        prisma.product.findUnique.mockResolvedValue(product);
+        const result = await service.findOneAndCheckAvailability(product.id, 5);
+        expect(prisma.product.findUnique).toHaveBeenCalled();
+        expect(result).toEqual(result);
+      });
+    });
+    describe('when the product exists, is visible, has stock but the quantity is less than stock', () => {
+      it('should throw the "BadRequestException"', async () => {
+        prisma.product.findUnique.mockResolvedValue(product);
+        try {
+          await service.findOneAndCheckAvailability(product.id, 50);
+        } catch (err) {
+          expect(err).toBeInstanceOf(BadRequestException);
+          expect(err.message).toEqual(
+            `Invalid quantity, not enough stock for Product #${product.id}`,
+          );
+        }
+      });
+    });
+    describe('when the product exists, is visible but stock is equal to 0', () => {
+      it('should throw the "BadRequestException"', async () => {
+        prisma.product.findUnique.mockResolvedValue({
+          ...product,
+          stock: 0,
+        });
+        try {
+          await service.findOneAndCheckAvailability(product.id, 50);
+        } catch (err) {
+          expect(err).toBeInstanceOf(BadRequestException);
+          expect(err.message).toEqual(`Product #${product.id} is out of stock`);
         }
       });
     });
