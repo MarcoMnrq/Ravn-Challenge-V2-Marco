@@ -22,7 +22,7 @@ Dummy Manager
 }
 ```
 
-Swagger API Documentation: https://tiny-store-api.herokuapp.com/api-docs/
+Swagger API Documentation: https://tiny-store-api-prod.herokuapp.com/api-docs/
 
 ## 🔐 Environment Variables
 
