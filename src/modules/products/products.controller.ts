@@ -112,7 +112,7 @@ export class ProductsController {
     return this.productsService.update(+id, updateProductDto);
   }
 
-  @Delete(':id')
+  @Delete('products/:id')
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Delete a product',
