@@ -56,9 +56,21 @@ describe('OrdersController', () => {
     });
   });
 
-  describe('create', () => {
-    it('should create a new order', async () => {
-      const user = {
+  describe('findAll', () => {
+    const user = {
+      id: 1,
+      email: 'dummy@gmail.com',
+      firstName: 'Jhon',
+      lastName: 'Doe',
+      password: '',
+      roles: [UserRole.CLIENT],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    const order = {
+      id: 1,
+      userId: 1,
+      user: {
         id: 1,
         email: 'dummy@gmail.com',
         firstName: 'Jhon',
@@ -67,28 +79,43 @@ describe('OrdersController', () => {
         roles: [UserRole.CLIENT],
         createdAt: new Date(),
         updatedAt: new Date(),
-      };
-      const order = {
-        id: 1,
-        userId: 1,
-        total: 20,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        items: [
-          {
+      },
+      total: 20,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      items: [
+        {
+          id: 1,
+          orderId: 1,
+          productId: 1,
+          product: {
             id: 1,
-            orderId: 1,
-            productId: 1,
+            name: 'product 2',
+            description: 'product 2 description',
+            category: 'category 2',
             price: 20,
-            quantity: 1,
+            stock: 20,
+            isVisible: false,
+            imageUrl: '',
+            createdAt: new Date(),
+            updatedAt: new Date(),
           },
-        ],
-      };
+          price: 20,
+          quantity: 1,
+        },
+      ],
+    };
+    it('should return all the client orders', async () => {
       jest
-        .spyOn(service, 'create')
-        .mockImplementation(() => Promise.resolve(order));
-
-      expect(await controller.create(user)).toEqual(order);
+        .spyOn(service, 'findAll')
+        .mockImplementation(() => Promise.resolve([order]));
+      expect(await controller.findAll()).toEqual([order]);
+    });
+    it('should return all the placed orders by auth user', async () => {
+      jest
+        .spyOn(service, 'findAll')
+        .mockImplementation(() => Promise.resolve([order]));
+      expect(await controller.findAllByUserId(user)).toEqual([order]);
     });
   });
 

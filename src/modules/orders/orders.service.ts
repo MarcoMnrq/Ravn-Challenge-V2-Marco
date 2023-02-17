@@ -55,9 +55,9 @@ export class OrdersService {
    * provided, we want to return all orders.
    * @returns An array of orders.
    */
-  findAll(userId?: number) {
+  async findAll(userId?: number) {
     const whereClause = userId ? { userId } : {};
-    return this.prisma.order.findMany({
+    const items = await this.prisma.order.findMany({
       where: whereClause,
       include: {
         user: {
@@ -75,5 +75,6 @@ export class OrdersService {
         },
       },
     });
+    return items;
   }
 }
