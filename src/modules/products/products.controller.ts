@@ -11,20 +11,26 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UseRoles } from 'nest-access-control';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { ExposedEndpoint } from '../../decorators/exposed-endpoint.decorator';
+import { SearchProductQueryDto } from './dto/search-product-query.dto';
 
 @ApiTags('Products')
 @Controller({
-  path: 'products',
+  path: '',
   version: '1',
 })
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @Post()
+  @Post('products')
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Create a new product',
@@ -38,18 +44,26 @@ export class ProductsController {
     return this.productsService.create(createProductDto);
   }
 
-  @Get('public')
+  @Get('public/products')
   @ExposedEndpoint()
   @ApiOperation({
     summary: 'Get all the published products',
   })
-  findAllPublic(@Query() paginationQueryDto: PaginationQueryDto) {
-    return this.productsService.findAll(paginationQueryDto, {
-      isVisible: true,
-    });
+  findAllPublic(@Query() searchProductDto: SearchProductQueryDto) {
+    const conditions = searchProductDto.category
+      ? {
+          isVisible: true,
+          category: {
+            contains: searchProductDto.category,
+          },
+        }
+      : {
+          isVisible: true,
+        };
+    return this.productsService.findAll(searchProductDto, conditions);
   }
 
-  @Get()
+  @Get('products')
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all the products',
@@ -59,11 +73,18 @@ export class ProductsController {
     action: 'read',
     possession: 'any',
   })
-  findAll(@Query() paginationQueryDto: PaginationQueryDto) {
-    return this.productsService.findAll(paginationQueryDto);
+  findAll(@Query() searchProductDto: SearchProductQueryDto) {
+    const conditions = searchProductDto.category
+      ? {
+          category: {
+            contains: searchProductDto.category,
+          },
+        }
+      : undefined;
+    return this.productsService.findAll(searchProductDto, conditions);
   }
 
-  @Get(':id')
+  @Get('products/:id')
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Find one specific product',
@@ -77,7 +98,7 @@ export class ProductsController {
     return this.productsService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Patch('products/:id')
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Update a single product',

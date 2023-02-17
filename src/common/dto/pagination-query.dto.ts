@@ -6,10 +6,10 @@ export class PaginationQueryDto {
   @Min(1)
   @Max(50)
   @Transform(({ value }: TransformFnParams) => parseInt(value, 10))
-  readonly limit: number;
+  limit: number;
 
   @IsNumber()
   @Min(1)
   @Transform(({ value }: TransformFnParams) => parseInt(value, 10))
-  readonly page: number;
+  page: number;
 }

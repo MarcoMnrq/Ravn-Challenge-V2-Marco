@@ -8,6 +8,7 @@ import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { PaginationResponseDto } from '../../common/dto/pagination-response.dto';
 import { PrismaService } from '../../database/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
+import { SearchProductQueryDto } from './dto/search-product-query.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
@@ -37,10 +38,11 @@ export class ProductsService {
    * @returns A paginated list of products.
    */
   async findAll(
-    paginationQueryDto: PaginationQueryDto,
+    searchProductQueryDto: SearchProductQueryDto,
     conditions?: Record<string, any>,
   ): Promise<PaginationResponseDto<Product>> {
-    const { limit, page } = paginationQueryDto;
+    const limit = searchProductQueryDto.limit || 10;
+    const page = searchProductQueryDto.page || 1;
     const items = await this.prisma.product.findMany({
       where: {
         ...conditions,
@@ -48,7 +50,11 @@ export class ProductsService {
       take: limit,
       skip: (page - 1) * limit,
     });
-    const total = await this.prisma.product.count();
+    const total = await this.prisma.product.count({
+      where: {
+        ...conditions,
+      },
+    });
     return new PaginationResponseDto(items, total, page, limit);
   }
 
