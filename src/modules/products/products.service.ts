@@ -66,9 +66,14 @@ export class ProductsService {
    * @returns The product with the id that was passed in.
    */
   async findOne(id: number, conditions?: Record<string, any>) {
-    const product = await this.prisma.product.findUnique({
-      where: { id: id, ...conditions },
-    });
+    const findProduct = conditions
+      ? this.prisma.product.findFirst({
+          where: { id: id, ...conditions },
+        })
+      : this.prisma.product.findUnique({
+          where: { id: id },
+        });
+    const product = await findProduct;
     if (!product) {
       throw new NotFoundException(`Product #${id} not found`);
     }
