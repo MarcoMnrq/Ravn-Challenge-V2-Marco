@@ -6,6 +6,7 @@ import { PrismaClient, Product } from '@prisma/client';
 import { CreateProductDto } from './dto/create-product.dto';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { Readable } from 'stream';
 
 describe('ProductsService', () => {
   let service: ProductsService;
@@ -118,6 +119,110 @@ describe('ProductsService', () => {
     });
   });
 
+  describe('addImage', () => {
+    const product = {
+      id: 1,
+      name: 'Test Product',
+      description: 'This is a test product',
+      category: 'Test Category',
+      isVisible: true,
+      price: 10,
+      stock: 5,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    const file = {
+      fieldname: '',
+      destination: '',
+      mimetype: 'image/png',
+      originalname: '',
+      filename: '',
+      path: 'file',
+      size: 1000,
+      encoding: 'null',
+      stream: Readable.from('test'),
+      buffer: Buffer.from('test'),
+    };
+    describe('when product with ID exists', () => {
+      it('should add a product image', async () => {
+        prisma.product.findUnique.mockResolvedValueOnce(product);
+        prisma.productImage.create.mockResolvedValue({
+          id: 1,
+          productId: 1,
+          url: `https://picsum.photos/id/${product.id}/200/300`,
+        });
+
+        const result = await service.addImage(product.id, file);
+        expect(prisma.product.findUnique).toHaveBeenCalled();
+        expect(result).toEqual({
+          id: 1,
+          productId: 1,
+          url: `https://picsum.photos/id/${product.id}/200/300`,
+        });
+      });
+    });
+    describe('otherwise', () => {
+      it('should throw the "NotFoundException"', async () => {
+        const productId = 1;
+        prisma.product.findUnique.mockResolvedValue(null);
+        try {
+          await service.addImage(product.id, file);
+        } catch (err) {
+          expect(err).toBeInstanceOf(NotFoundException);
+          expect(err.message).toEqual(`Product #${productId} not found`);
+        }
+      });
+    });
+  });
+
+  describe('removeImage', () => {
+    const product = {
+      id: 1,
+      name: 'Test Product',
+      description: 'This is a test product',
+      category: 'Test Category',
+      isVisible: true,
+      price: 10,
+      stock: 5,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    describe('when product with ID exists and product image with ID exists', () => {
+      it('should remove the product image', async () => {
+        prisma.productImage.findFirst.mockResolvedValueOnce({
+          id: 1,
+          productId: 1,
+          url: `https://picsum.photos/id/${product.id}/200/300`,
+        });
+        prisma.productImage.delete.mockResolvedValue({
+          id: 1,
+          productId: 1,
+          url: `https://picsum.photos/id/${product.id}/200/300`,
+        });
+
+        const result = await service.removeImage(product.id, 1);
+        expect(prisma.productImage.findFirst).toHaveBeenCalled();
+        expect(prisma.productImage.delete).toHaveBeenCalled();
+        expect(result).toEqual({
+          id: 1,
+          productId: 1,
+          url: `https://picsum.photos/id/${product.id}/200/300`,
+        });
+      });
+    });
+    describe('otherwise', () => {
+      it('should throw the "NotFoundException"', async () => {
+        prisma.productImage.findFirst.mockResolvedValueOnce(null);
+        try {
+          await service.removeImage(product.id, 1);
+        } catch (err) {
+          expect(err).toBeInstanceOf(NotFoundException);
+          expect(err.message).toEqual(`Product image not found`);
+        }
+      });
+    });
+  });
+
   describe('update', () => {
     const product: Product = {
       id: 1,
@@ -193,7 +298,7 @@ describe('ProductsService', () => {
         expect(result).toEqual(result);
       });
     });
-    describe('otherwise', () => {
+    describe('when the product does not exists', () => {
       it('should throw the "NotFoundException"', async () => {
         const productId = 1;
         prisma.product.findUnique.mockResolvedValue(null);
@@ -202,6 +307,21 @@ describe('ProductsService', () => {
         } catch (err) {
           expect(err).toBeInstanceOf(NotFoundException);
           expect(err.message).toEqual(`Product #${productId} not found`);
+        }
+      });
+    });
+    describe('when the product is referenced in an order', () => {
+      it('should throw the "BadRequestException"', async () => {
+        prisma.product.findUnique.mockImplementation(() => {
+          throw new BadRequestException({
+            message: 'Foreign key constraint failed',
+          });
+        });
+        try {
+          await service.remove(1);
+        } catch (err) {
+          expect(err).toBeInstanceOf(BadRequestException);
+          expect(err.message).toEqual('Foreign key constraint failed');
         }
       });
     });
