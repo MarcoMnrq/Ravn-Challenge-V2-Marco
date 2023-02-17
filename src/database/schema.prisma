@@ -30,19 +30,26 @@ enum UserRole {
 }
 
 model Product {
-  id          Int         @id @default(autoincrement())
+  id          Int            @id @default(autoincrement())
   name        String
   description String?
   category    String
   price       Float
   stock       Int
-  isVisible   Boolean     @default(false)
-  imageUrl    String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @default(now())
+  isVisible   Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @default(now())
   CartItem    CartItem[]
   OrderItem   OrderItem[]
   Like        Like[]
+  images      ProductImage[]
+}
+
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  url       String
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
 }
 
 model Like {

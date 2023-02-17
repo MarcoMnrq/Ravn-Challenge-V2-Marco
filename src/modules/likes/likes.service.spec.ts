@@ -47,7 +47,6 @@ describe('LikesService', () => {
       price: 20,
       stock: 5,
       isVisible: true,
-      imageUrl: '',
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -133,7 +132,6 @@ describe('LikesService', () => {
       price: 20,
       stock: 5,
       isVisible: true,
-      imageUrl: '',
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -178,7 +176,6 @@ describe('LikesService', () => {
       price: 20,
       stock: 5,
       isVisible: true,
-      imageUrl: '',
       createdAt: new Date(),
       updatedAt: new Date(),
     };

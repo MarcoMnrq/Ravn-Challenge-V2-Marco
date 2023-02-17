@@ -11,9 +11,6 @@ export class CreateProductDto {
   isVisible: boolean;
 
   @IsString()
-  imageUrl: string;
-
-  @IsString()
   category: string;
 
   @IsNumber()

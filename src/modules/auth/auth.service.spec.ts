@@ -138,6 +138,15 @@ describe('AuthService', () => {
       expect(result).toEqual(user);
     });
   });
+  describe('signOut', () => {
+    it('should return a sucess message', async () => {
+      jest
+        .spyOn(service, 'signOut')
+        .mockResolvedValue({ message: 'User has been signed out.' });
+      const result = await service.signOut();
+      expect(result).toEqual({ message: 'User has been signed out.' });
+    });
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

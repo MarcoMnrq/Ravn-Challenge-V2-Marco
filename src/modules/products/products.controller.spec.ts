@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Product } from '@prisma/client';
+import { Readable } from 'stream';
 import { PaginationResponseDto } from '../../common/dto/pagination-response.dto';
 import { PrismaModule } from '../../database/prisma.module';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -31,7 +32,6 @@ describe('ProductsController', () => {
         name: 'Test Product',
         description: 'This is a test product',
         category: 'Test Category',
-        imageUrl: '',
         isVisible: true,
         price: 10,
         stock: 5,
@@ -52,6 +52,36 @@ describe('ProductsController', () => {
     });
   });
 
+  describe('addImage', () => {
+    it('should add an image to the product', async () => {
+      const productId = 1;
+      const file = {
+        fieldname: '',
+        destination: '',
+        mimetype: 'image/png',
+        originalname: '',
+        filename: '',
+        path: 'file',
+        size: 1000,
+        encoding: 'null',
+        stream: Readable.from('test'),
+        buffer: Buffer.from('test'),
+      };
+      jest.spyOn(service, 'addImage').mockImplementation(() =>
+        Promise.resolve({
+          id: 1,
+          productId: 1,
+          url: `https://picsum.photos/id/${productId}/200/300`,
+        }),
+      );
+      expect(await controller.addImage(productId.toString(), file)).toEqual({
+        id: 1,
+        productId: 1,
+        url: `https://picsum.photos/id/${productId}/200/300`,
+      });
+    });
+  });
+
   describe('findAll', () => {
     it('should get an array of products', async () => {
       const result: Product[] = [
@@ -60,7 +90,6 @@ describe('ProductsController', () => {
           name: 'Test Product',
           description: 'This is a test product',
           category: 'Test Category',
-          imageUrl: '',
           isVisible: true,
           price: 10,
           stock: 5,
@@ -72,7 +101,6 @@ describe('ProductsController', () => {
           name: 'Test Product',
           description: 'This is a test product',
           category: 'Test Category',
-          imageUrl: '',
           isVisible: false,
           price: 10,
           stock: 5,
@@ -111,7 +139,6 @@ describe('ProductsController', () => {
           name: 'Test Product',
           description: 'This is a test product',
           category: 'Test Category',
-          imageUrl: '',
           isVisible: true,
           price: 10,
           stock: 5,
@@ -123,7 +150,7 @@ describe('ProductsController', () => {
           name: 'Test Product',
           description: 'This is a test product',
           category: 'Test Category',
-          imageUrl: '',
+
           isVisible: true,
           price: 10,
           stock: 5,
@@ -161,7 +188,6 @@ describe('ProductsController', () => {
         name: 'Test Product',
         description: 'This is a test product',
         category: 'Test Category',
-        imageUrl: '',
         isVisible: true,
         price: 10,
         stock: 5,
@@ -181,7 +207,6 @@ describe('ProductsController', () => {
         name: 'Test Product',
         description: 'This is a test product',
         category: 'Test Category',
-        imageUrl: '',
         isVisible: true,
         price: 10,
         stock: 5,
@@ -191,7 +216,6 @@ describe('ProductsController', () => {
         name: 'Test Product',
         description: 'This is a test product',
         category: 'Test Category',
-        imageUrl: '',
         isVisible: true,
         price: 10,
         stock: 5,
@@ -217,7 +241,6 @@ describe('ProductsController', () => {
         name: 'Test Product',
         description: 'This is a test product',
         category: 'Test Category',
-        imageUrl: '',
         isVisible: true,
         price: 10,
         stock: 5,

@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Product } from '@prisma/client';
-import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { PaginationResponseDto } from '../../common/dto/pagination-response.dto';
 import { PrismaService } from '../../database/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -49,6 +48,9 @@ export class ProductsService {
       },
       take: limit,
       skip: (page - 1) * limit,
+      include: {
+        images: true,
+      },
     });
     const total = await this.prisma.product.count({
       where: {
@@ -114,6 +116,53 @@ export class ProductsService {
       }
       throw error;
     }
+  }
+
+  /**
+   * It creates a new product image and connects it to the product with the given id
+   * @param {number} productId - number - The id of the product we want to add an image to.
+   * @param file - Express.Multer.File
+   * @returns The productImage object
+   */
+  async addImage(productId: number, file: Express.Multer.File) {
+    const product = await this.findOne(productId);
+    /* TODO: Invoke AwsS3Service in /shared/services/... */
+    const productImage = await this.prisma.productImage.create({
+      data: {
+        url: `https://picsum.photos/id/${productId}/200/300`,
+        product: {
+          connect: {
+            id: product.id,
+          },
+        },
+      },
+    });
+    return productImage;
+  }
+
+  /**
+   * It finds the product image with the given id and product id, and if it exists, it deletes it
+   * @param {number} productId - number - The ID of the product that the image is associated with.
+   * @param {number} imageId - The id of the image to be deleted
+   * @returns The productImage object is being returned.
+   */
+  async removeImage(productId: number, imageId: number) {
+    const productImage = await this.prisma.productImage.findFirst({
+      where: {
+        id: imageId,
+        product: {
+          id: productId,
+        },
+      },
+    });
+    if (!productImage) {
+      throw new NotFoundException(`Product image not found`);
+    }
+    return this.prisma.productImage.delete({
+      where: {
+        id: productImage.id,
+      },
+    });
   }
 
   /**

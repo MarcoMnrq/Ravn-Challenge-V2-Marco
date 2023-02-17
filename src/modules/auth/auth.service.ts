@@ -66,4 +66,12 @@ export class AuthService {
     }
     return this.usersService.create({ ...signUpDto });
   }
+
+  /**
+   * It returns a promise that resolves to an object with a message property
+   * @returns A promise that resolves to an object with a message property.
+   */
+  async signOut() {
+    return { message: 'User has been signed out.' };
+  }
 }
