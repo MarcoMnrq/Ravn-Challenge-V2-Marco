@@ -168,6 +168,51 @@ describe('LikesService', () => {
     });
   });
 
+  describe('remove', () => {
+    const userId = 1;
+    const mockProduct: Product = {
+      id: 1,
+      name: 'Test',
+      description: 'Test',
+      category: 'test',
+      price: 20,
+      stock: 5,
+      isVisible: true,
+      imageUrl: '',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    const mockedLike: Like = {
+      id: 1,
+      productId: 1,
+      userId: 1,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    describe('when product with ID exists', () => {
+      it('should delete a like by id', async () => {
+        prisma.like.findFirst.mockResolvedValue(mockedLike);
+        prisma.like.delete.mockResolvedValue(mockedLike);
+        const result = await service.remove(userId, mockProduct.id);
+        expect(result).toEqual(result);
+      });
+    });
+    describe('otherwise', () => {
+      it('should throw the "NotFoundException"', async () => {
+        const productId = 1;
+        prisma.like.findFirst.mockResolvedValue(null);
+        try {
+          await service.remove(userId, mockProduct.id);
+        } catch (err) {
+          expect(err).toBeInstanceOf(NotFoundException);
+          expect(err.message).toEqual(
+            `Product #${productId} is not on user's liked products`,
+          );
+        }
+      });
+    });
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });

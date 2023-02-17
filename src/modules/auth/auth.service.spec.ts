@@ -7,20 +7,22 @@ import { AuthService } from './auth.service';
 import * as argon2 from 'argon2';
 import { SignInEmailDto } from './dto/sign-in-email.dto';
 import { SignUpDto } from './dto/sign-up.dto';
-import { UsersModule } from '../users/users.module';
-import { PrismaModule } from '../../database/prisma.module';
 
 describe('AuthService', () => {
   let service: AuthService;
   let usersService: UsersService;
-  let jwtService: JwtService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [UsersModule, PrismaModule],
       providers: [
         AuthService,
-        UsersService,
+        {
+          provide: UsersService,
+          useValue: {
+            findOneByEmail: jest.fn(),
+            create: jest.fn(),
+          },
+        },
         {
           provide: JwtService,
           useValue: {
@@ -29,12 +31,9 @@ describe('AuthService', () => {
         },
       ],
     }).compile();
-
     service = module.get<AuthService>(AuthService);
     usersService = module.get<UsersService>(UsersService);
-    jwtService = module.get<JwtService>(JwtService);
   });
-  /*
   describe('signInWithEmail', () => {
     it('should throw an error if email is not found', async () => {
       const signInEmailDto: SignInEmailDto = {
@@ -67,6 +66,7 @@ describe('AuthService', () => {
         UnauthorizedException,
       );
     });
+
     it('should return a token and user if email and password are correct', async () => {
       const signInEmailDto: SignInEmailDto = {
         email: 'user@example.com',
@@ -109,7 +109,7 @@ describe('AuthService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      jest.spyOn(usersService, 'findOneByEmail').mockResolvedValue(user);
+      jest.spyOn(usersService, 'findOneByEmail').mockResolvedValueOnce(user);
       await expect(service.signUp(signUpDto)).rejects.toThrow(
         BadRequestException,
       );
@@ -133,11 +133,12 @@ describe('AuthService', () => {
         updatedAt: new Date(),
       };
       jest.spyOn(usersService, 'findOneByEmail').mockResolvedValue(null);
+      jest.spyOn(usersService, 'create').mockResolvedValue(user);
       const result = await service.signUp(signUpDto);
       expect(result).toEqual(user);
     });
   });
- */
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
