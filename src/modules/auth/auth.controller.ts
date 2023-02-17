@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { ExposedEndpoint } from '../../decorators/exposed-endpoint.decorator';
@@ -29,5 +29,14 @@ export class AuthController {
   @ExposedEndpoint()
   async register(@Body() signUpDto: SignUpDto) {
     return this.authService.signUp(signUpDto);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Returns success, JWT should be removed in the client-side',
+  })
+  @Post('logout')
+  async logout() {
+    return this.authService.signOut();
   }
 }

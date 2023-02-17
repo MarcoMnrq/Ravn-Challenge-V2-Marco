@@ -107,6 +107,19 @@ describe('AuthController', () => {
     });
   });
 
+  describe('logout', () => {
+    it('should return a success message', async () => {
+      jest
+        .spyOn(service, 'signOut')
+        .mockImplementation(() =>
+          Promise.resolve({ message: 'User has been signed out.' }),
+        );
+      expect(await controller.logout()).toEqual({
+        message: 'User has been signed out.',
+      });
+    });
+  });
+
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
