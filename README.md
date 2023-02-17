@@ -2,6 +2,28 @@
 
 TinyStore is a REST API for a e-commerce platform. Functionalities include handling products, shopping cart, orders, authentication, and user preferences. This project is built using Node.js, Nest.js, and PostgreSQL, ensuring fast and efficient data handling. The different modules have been thoroughly tested and secure, ensuring that sensitive information is always protected.
 
+## 🕹️ Live Demo
+
+Dummy Client
+
+```json
+{
+  "email": "client@example.com",
+  "password": "clientPassword"
+}
+```
+
+Dummy Manager
+
+```json
+{
+  "email": "manager@example.com",
+  "password": "managerPassword"
+}
+```
+
+Swagger API Documentation: https://tiny-store-api.herokuapp.com/api-docs/
+
 ## 🔐 Environment Variables
 
 To run this project, you will need to add the following environment variables to your .env file
